@@ -1,0 +1,54 @@
+{
+  "name": "panel-api-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "kenci dev",
+    "build": "kenci build",
+    "start": "cross-env NODE_ENV=production node ./dist/main.js"
+  },
+  "dependencies": {
+    "@kenote/core": "^1.0.47",
+    "@kenote/koa": "^1.0.32",
+    "@kenote/koa-passport": "^1.0.32",
+    "@kenote/koa-session": "^1.0.32",
+    "@kenote/mailer": "^1.0.32",
+    "@kenote/protobuf": "^1.0.32",
+    "@kenote/upload": "^1.0.32",
+    "axios": "^1.13.4",
+    "better-sqlite3": "^12.5.0",
+    "consolidate": "^0.16.0",
+    "cross-env": "^10.1.0",
+    "file-type": "^21.3.0",
+    "iconv-lite": "^0.7.2",
+    "ioredis": "^5.8.2",
+    "is-stream": "^2.0.1",
+    "koa-redis": "^4.0.1",
+    "log4js": "^6.7.1",
+    "mysql2": "^3.16.0",
+    "passport-jwt": "^4.0.1",
+    "pg": "^8.16.3",
+    "progress": "^2.0.3",
+    "sharp": "^0.34.5",
+    "typeorm": "^0.3.28",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "@types/ioredis": "^4.28.10",
+    "@types/mime-types": "^3.0.1",
+    "@types/node": "^14.18.63",
+    "@types/passport-jwt": "^4.0.1",
+    "@types/pg": "^8.16.0",
+    "@types/progress": "^2.0.7"
+  },
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "config": {
+    "libvips": ">=8.17.3"
+  },
+  "repository": "https://github.com/kenote/panel-api-server.git",
+  "author": "thondery <thondery@163.com>",
+  "license": "MIT"
+}
