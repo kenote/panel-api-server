@@ -3,7 +3,7 @@ import { ExtractJwt, Strategy, type StrategyOptions, type VerifyCallbackWithRequ
 import { loadConfig } from '@kenote/config'
 import type { ServerConfigure } from '@/types/config/server'
 import { Request } from 'koa'
-import { userRepository } from '~/servies/db/user'
+import { userRepository } from '~/services/db/user'
 
 const { SECRET_KEY } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 

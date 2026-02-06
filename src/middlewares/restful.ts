@@ -4,7 +4,7 @@ import type { Restful, AuthToken, Account } from '@/types/restful'
 import { setJwToken, verifyJwToken } from './auth'
 import { loadConfig } from '@kenote/config'
 import type { ServerConfigure } from '@/types/config'
-import { userRepository, safeUser } from '~/servies/db/user'
+import { userRepository, safeUser } from '~/services/db/user'
 import type { User } from '~/entities'
 
 const { SECRET_KEY, expiresIn, REFRESH_SECRET, refreshExpires } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })

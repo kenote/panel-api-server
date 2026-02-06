@@ -1,4 +1,4 @@
-import AppDataSource from '~/servies/data'
+import AppDataSource from '~/services/data'
 import { User } from '~/entities'
 import type { QueryUser, NewUser, SafeUser, VerifyUser } from '@/types/db/user'
 import { merge, omit } from 'lodash'
