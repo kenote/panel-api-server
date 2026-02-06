@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { HttpClient } from '@kenote/common'
-import { HttpRequest, HttpResponse } from '@/types/http'
+import type { HttpRequest, HttpResponse } from '@/types/http'
 import qs from 'query-string'
 import { merge } from 'lodash'
 
