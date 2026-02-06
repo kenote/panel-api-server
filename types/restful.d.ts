@@ -1,6 +1,7 @@
 import { HttpError } from 'http-errors'
 import { SafeUser } from './db/user'
 import { User } from '~/entities'
+import { Context } from '@kenote/core'
 
 export declare interface Restful {
   api<t = any> (data: t, error?: HttpError): void
@@ -9,6 +10,13 @@ export declare interface Restful {
   jwToken: string
   jwtlogin (user: User): Promise<AuthToken>
   refreshToken (body: Account.refresh): Promise<AuthToken | null>
+  getUser (): Promise<SafeUser | undefined | null>
+  sendStream (content: string, options?: StreamOptions): Context
+}
+
+export declare interface StreamOptions {
+  mode          : 'preview' | 'stream' | 'download'
+  contentType  ?: string
 }
 
 export declare type AuthToken = {

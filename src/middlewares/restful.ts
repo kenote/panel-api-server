@@ -1,11 +1,15 @@
 import { Action, type Context, Middleware, Property } from '@kenote/core'
 import type { HttpError } from 'http-errors'
-import type { Restful, AuthToken, Account } from '@/types/restful'
+import type { Restful, AuthToken, Account, StreamOptions } from '@/types/restful'
 import { setJwToken, verifyJwToken } from './auth'
 import { loadConfig } from '@kenote/config'
 import type { ServerConfigure } from '@/types/config'
 import { userRepository, safeUser } from '~/services/db/user'
 import type { User } from '~/entities'
+import { tokenRepository } from '~/services/db/token'
+import { Readable } from 'stream'
+import * as Store from '~/services/store'
+import fs from 'fs'
 
 const { SECRET_KEY, expiresIn, REFRESH_SECRET, refreshExpires } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 
@@ -69,6 +73,56 @@ export default class restful {
         return authToken
       }
       return null
+    }
+  }
+
+  @Action()
+  getUser (ctx: Context) {
+    return async () => {
+      // 使用APIKey
+      if (/^(sk)\-{1}/.test(ctx.jwToken) && /^\/(v1|upload)\/{1}/.test(ctx.path)) {
+        let token = await tokenRepository.findOneBy({ token: ctx.jwToken })
+        if (token) {
+          if (token.expireTime > 0 && (token.expireTime < Date.now())) {
+            return null
+          }
+          let user = await userRepository.findOneBy({ pid: token.uid })
+          return safeUser(user!)
+        }
+        return null
+      }
+      // 使用用户令牌
+      if (/^(ck)\-{1}/.test(ctx.jwToken)) {
+        let user = await userRepository.findOneBy({ token: ctx.jwToken })
+        return safeUser(user!)
+      }
+      // 使用JWT
+      let payload = verifyJwToken(ctx.jwToken, SECRET_KEY)
+      if (payload) {
+        let user = await userRepository.findOneBy({ pid: payload.pid, jwtoken: ctx.jwToken })
+        return safeUser(user!)
+      }
+      return null
+    }
+  }
+
+  @Action()
+  sendStream (ctx: Context) {
+    return (content: string, options: StreamOptions = { mode: 'stream', contentType: 'application/octet-stream' }) => {
+      let contentType = options.contentType
+      let fileStream: Buffer | Readable | null
+      if (options.mode === 'stream') {
+        contentType = 'application/octet-stream'
+        fileStream = new Readable()
+        fileStream.push(content)
+        fileStream.push(null)
+      }
+      else {
+        contentType = Store.getContentType(content, options)
+        fileStream = fs.readFileSync(content)
+      }
+      ctx.setHeader('Content-Type', contentType)
+      return ctx.send(fileStream)
     }
   }
 }

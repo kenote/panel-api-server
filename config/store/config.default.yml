@@ -1,0 +1,14 @@
+---
+
+# 默认存储器
+default:
+  name: 默认
+  type: local
+  max_limit: 4mb
+  mime_types:
+    - image/png
+    - image/jpeg
+    - image/webp
+  root_dir: uploadfiles/files
+  urlprefix: /files/files
+
