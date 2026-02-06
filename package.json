@@ -16,6 +16,7 @@
     "@kenote/mailer": "^1.0.32",
     "@kenote/protobuf": "^1.0.32",
     "@kenote/upload": "^1.0.32",
+    "address": "^2.0.3",
     "axios": "^1.13.4",
     "better-sqlite3": "^12.5.0",
     "consolidate": "^0.16.0",
