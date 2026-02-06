@@ -1,0 +1,14 @@
+---
+# 密码加密格式
+encryptRule: |-
+  ((value | md5) + '^' + salt) | sha1
+
+# 随机字符串规则
+randomOptions:
+  length: 10        # 密码长度
+  symbol: true      # 是否插入符号
+  capitalize: true  # 英文字符是否大小写
+
+# 验证码设置
+verifyCode:
+  timeout: 5m

@@ -1,0 +1,53 @@
+---
+# 网站名称
+SITE_NAME: Panel
+# 访问地址
+SITE_HOST: http://127.0.0.1:4000
+# JWT的令牌
+SECRET_KEY: PANEL-SERVER
+# 刷新JWT的令牌
+REFRESH_SECRET: PANEL-SERVER_REFRESH
+# JWT的令牌的超时时间
+expiresIn: 5m
+# 刷新JWT令牌的超时时间
+refreshExpires: 2d
+
+# 浏览器可预览的文件类型
+previewTypes:
+  - type: image/png
+    extname: [ .png ]
+  - type: image/gif
+    extname: [ .gif ]
+  - type: image/jpeg
+    extname: [ .jpg, .jpeg ]
+  - type: image/svg+xml
+    extname: [ '.svg' ]
+  - type: application/json; charset=utf-8
+    extname: [ .json ]
+  - type: text/yaml; charset=utf-8
+    extname: [ .yml, .yaml ]
+  - type: text/html; charset=utf-8
+    extname: [ .htm, .html ]
+  - type: image/webp
+    extname: [ .webp ]
+  - type: text/css; charset=utf-8
+    extname: [ .css ]
+  - type: image/vnd.microsoft.icon
+    extname: [ .ico ]
+  - type: application/javascript; charset=utf-8
+    extname: [ .js ]
+  - type: font/woff
+    extname: [ .woff ]
+  - type: font/woff2
+    extname: [ .woff2 ]
+
+# Redis 连接
+redisOpts:
+  host: 127.0.0.1
+  port: 6379
+  db: 0
+
+# 数据库连接
+dataOptios:
+  type: better-sqlite3
+  database: ./data/sqlite.db

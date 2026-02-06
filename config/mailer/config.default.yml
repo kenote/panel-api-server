@@ -1,0 +1,13 @@
+---
+# SMTP 邮箱配置
+smtpOptions:
+  host: smtp.ethereal.email
+  port: 587
+  auth:
+    user: penelope.leuschke41@ethereal.email
+    pass: aPxRSFBXbM7dseEwKK
+
+# SMTP 异步重试选项
+asyncRetryOptions:
+  times: 5          # 重试次数
+  interval: 200     # 间隔时长, 毫秒
