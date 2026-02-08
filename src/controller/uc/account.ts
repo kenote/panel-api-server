@@ -4,6 +4,7 @@ import type { HttpError } from 'http-errors'
 import * as filter from '~/filters/account'
 import { createUser, verifyUser, safeUser } from '~/services/db/user'
 import { sendMailByVerifycode } from '~/services/db/verify'
+import { tokenRepository } from '~/services/db/token'
 
 @Controller()
 export default class AccountController {
@@ -50,6 +51,25 @@ export default class AccountController {
     try {
       let result = await sendMailByVerifycode(ctx.payload)
       return ctx.api(result)
+    } catch (error) {
+      if (error instanceof Error) {
+        nextError(<HttpError>error, ctx, next)
+      }
+    }
+  }
+
+  /**
+   * 获取Tokens
+   */
+  @Get('/tokens')
+  async tokens (ctx: Context, next: NextHandler) {
+    try {
+      let user = await ctx.getUser()
+      if (!user) {
+        return await ctx.status(401).send('Unauthorized')
+      }
+      let tokens = await tokenRepository.findBy({ uid: user.pid })
+      return ctx.api(tokens)
     } catch (error) {
       if (error instanceof Error) {
         nextError(<HttpError>error, ctx, next)
