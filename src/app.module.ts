@@ -4,6 +4,7 @@ import passport from '~/plugins/passport'
 import logger from './services/logger'
 import restful from './middlewares/restful'
 import { resolve } from 'path'
+import RootControl from './controller'
 import UCControl from './controller/uc'
 import V1Control from './controller/v1'
 
@@ -28,7 +29,7 @@ class StaticFile {}
 class TemplateView {}
 
 @Module({
-  imports: [ StaticFile, TemplateView, UCControl, V1Control ],
+  imports: [ StaticFile, TemplateView, RootControl, UCControl, V1Control ],
   plugins: [ session, passport ],
   middlewares: [ restful ],
   httpException: {
