@@ -40,6 +40,8 @@ previewTypes:
     extname: [ .woff ]
   - type: font/woff2
     extname: [ .woff2 ]
+  - type: text/plain; charset=utf-8
+    extname: [ .txt, .log ]
 
 # Redis 连接
 redisOpts:

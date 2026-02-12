@@ -86,6 +86,10 @@ export const ERROR_NOT_MIGRATED_ADVANCED = 1020
  * 迁移的组不存在
  */
 export const ERROR_MIGRATED_GROUP_NOTEXIST = 1021
+/**
+ * Socket 连接超时
+ */
+export const ERROR_SOCKET_CONNECT_TIMEOUT = 1022
 
 /**
  * 上传文件类型

@@ -69,8 +69,6 @@ export async function unzipFile (zipFilePath: string, outputFolder: string, call
   let totalSize = await getUncompressedSize(zipFilePath)
   // 初始化解压文件大小
   let tmpSize = 0
-  // 初始化计时
-  let tmpTime = Date.now()
   // 创建文件流
   fs.createReadStream(zipFilePath)
     .pipe(unzipper.Parse())
@@ -84,10 +82,7 @@ export async function unzipFile (zipFilePath: string, outputFolder: string, call
       else {
         entry.on('data', chunk => {
           tmpSize += chunk.length
-          if ((Date.now() - tmpTime) > 300) {
-            tmpTime = Date.now()
-            callback?.(null, getProgressResult(tmpSize, totalSize))
-          }
+          callback?.(null, getProgressResult(tmpSize, totalSize))
         })
         entry.pipe(fs.createWriteStream(fullpath))
       }

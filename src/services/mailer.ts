@@ -57,7 +57,7 @@ export function sendMail (filename: string, content?: Record<string, any>) {
       let html = mailer.renderMail(filename, content)
       mail.html = html
       sendMailAPI(mail).then( ret => {
-        sendMailNext(null, ret)
+        sendMailNext(null, ret?.data)
       })
       .catch( err => {
         sendMailNext(err, null)

@@ -86,6 +86,10 @@ export const ERROR_NOT_MIGRATED_ADVANCED = '禁止迁移到高级组'
  * 迁移的组不存在
  */
 export const ERROR_MIGRATED_GROUP_NOTEXIST = '迁移的组不存在'
+/**
+ * Socket 连接超时
+ */
+export const ERROR_SOCKET_CONNECT_TIMEOUT = 'Socket 连接超时'
 
 
 /**
