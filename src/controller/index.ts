@@ -1,9 +1,10 @@
 import { Module } from '@kenote/core'
 import StoreController from './store'
+import ProxyController from './proxy'
 
 @Module({
   path: '/',
-  controller: [ StoreController ],
+  controller: [ StoreController, ProxyController ],
   options: {
     cors: true,
     headers: {}
