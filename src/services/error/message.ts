@@ -116,6 +116,10 @@ export const ERROR_FILENAME_EXISTS = '%s文件/目录已存在'
  * 文件/目录不存在
  */
 export const ERROR_FILENAME_NOTEXISTS = '%s文件/目录不存在'
+/**
+ * 不是有效的ZIP文件
+ */
+export const ERROR_NOT_ZIPFILE = '不是有效的ZIP文件'
 
 
 /**

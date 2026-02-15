@@ -20,7 +20,7 @@ export const taskDir = resolve(process.cwd(), 'tasks')
  * @param payload 
  * @returns 
  */
-export function createTask (options: TaskOptions, payload: any) {
+export function createTask (options: TaskOptions, payload?: any) {
   let pid = uuid.v7()
   if (options.type === 'api-proxy') {
     createTaskByAPIProxy(pid, omit(options, ['type']), payload)
@@ -46,7 +46,8 @@ export function createTaskByUnzip (pid: string, options: Omit<TaskByUnzip, 'type
   let info = <TaskNode> {
     pid,
     type: 'unzip',
-    data: options,
+    uid: options.uid,
+    data: omit(options, ['uid']),
     status: 'running',
     createTime: new Date()
   }
@@ -85,7 +86,8 @@ export function createTaskByArchiver (pid: string, options: Omit<TaskByArchiver,
   let info = <TaskNode> {
     pid,
     type: 'archiver',
-    data: options,
+    uid: options.uid,
+    data: omit(options, ['uid']),
     status: 'running',
     createTime: new Date()
   }
@@ -124,6 +126,7 @@ export function createTaskByAPIProxy (pid: string, options: Omit<TaskByAPIProxy,
   let info = <TaskNode> {
     pid,
     type: 'api-proxy',
+    uid: options.uid,
     data: {
       route: `${proxy.ctx.method} ${proxy.ctx.originalUrl}`,
       body: proxy.ctx.body,
@@ -161,13 +164,16 @@ export function createTaskByAPIProxy (pid: string, options: Omit<TaskByAPIProxy,
  * 获取任务列表
  * @returns 
  */
-export function getTaskList () {
+export function getTaskList (uid?: string) {
+  if (!fs.existsSync(taskDir)) {
+    fs.mkdirSync(taskDir, { recursive: true })
+  }
   let list = fs.readdirSync(taskDir).filter( v => fs.statSync(resolve(taskDir, v)).isDirectory() )
   let tasks: TaskNode[] = []
   for (let name of list) {
     tasks.push(loadConfig(resolve(taskDir, name, 'setting.yml')))
   }
-  return tasks
+  return uid ? tasks.filter( v => v.uid === uid ) : tasks
 }
 
 /**

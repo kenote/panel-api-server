@@ -8,6 +8,7 @@ import logger from '~/services/logger'
 import { parseSetting, getChannelService } from '~/services/channel'
 import * as service from '~/services'
 import { createTask } from '~/services/task'
+import type { SafeUser } from '@/types/db'
 
 @Controller('/v2')
 export default class ProxyController {
@@ -29,7 +30,7 @@ export default class ProxyController {
       }
     }
     try {
-      let { notFound, authenticationState, isUser, entrance, payload, serviceModules, setting } = await getEntrance(options)(ctx, 'channels')
+      let { notFound, authenticationState, isUser, user, entrance, payload, serviceModules, setting } = await getEntrance<SafeUser>(options)(ctx, 'channels')
       if (notFound) return ctx.notfound()
       if (authenticationState?.type === 'apikey' && isUser === 'Unauthorized') {
         return await ctx.status(401).send('Unauthorized')
@@ -40,7 +41,13 @@ export default class ProxyController {
       if (ctx.query?.callback == 'task') {
         // 创建任务
         let { output } = ctx.query
-        let result = createTask({ type: 'api-proxy', entrance, proxy: { ctx, logger, setting, serviceModules }, output }, payload)
+        let result = createTask({ 
+          type: 'api-proxy', 
+          uid: (<SafeUser>user).pid ?? user,
+          entrance, 
+          proxy: { ctx, logger, setting, serviceModules }, 
+          output 
+        }, payload)
         return ctx.api(result)
       }
       

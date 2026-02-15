@@ -6,6 +6,7 @@ import type { Callback } from 'ioredis'
 import archiver from 'archiver'
 import type { ProgressResult, ArchiveResult, ArchiveOptions } from '@/types'
 import { pick, compact } from 'lodash'
+import { httpError, ErrorCode } from '~/services/error'
 
 /**
  * 归档文件
@@ -78,17 +79,18 @@ export async function unzipFile (zipFilePath: string, outputFolder: string, call
       if (entry.type === 'Directory') {
         fs.mkdirSync(fullpath, { recursive: true })
         await entry.autodrain()
+        callback?.(null, getProgressResult(tmpSize, totalSize!, entry.path))
       }
       else {
         entry.on('data', chunk => {
           tmpSize += chunk.length
-          callback?.(null, getProgressResult(tmpSize, totalSize))
+          callback?.(null, getProgressResult(tmpSize, totalSize!, entry.path))
         })
         entry.pipe(fs.createWriteStream(fullpath))
       }
     })
     .on('finish', () => {
-      callback?.(null, getProgressResult(tmpSize, totalSize))
+      callback?.(null, getProgressResult(tmpSize, totalSize!))
     })
     .on('error', error => {
       resultError(error, callback)
@@ -101,12 +103,17 @@ export async function unzipFile (zipFilePath: string, outputFolder: string, call
  * @returns 
  */
 async function getUncompressedSize (zipFilePath: string) {
-  let directory = await unzipper.Open.file(zipFilePath)
-  let totalSize = 0
-  for (let entry of directory.files) {
-    totalSize += entry.uncompressedSize
+  try {
+    let directory = await unzipper.Open.file(zipFilePath)
+    let totalSize = 0
+    for (let entry of directory.files) {
+      totalSize += entry.uncompressedSize
+    }
+    return totalSize
+  } catch (error) {
+    throw httpError(ErrorCode.ERROR_NOT_ZIPFILE)
   }
-  return totalSize
+  
 }
 
 /**
@@ -115,11 +122,12 @@ async function getUncompressedSize (zipFilePath: string) {
  * @param total 
  * @returns 
  */
-function getProgressResult(current: number, total: number) {
+function getProgressResult(current: number, total: number, path?: string) {
   return <ProgressResult> {
     current,
     total,
-    progress: current/total*100
+    progress: current/total*100,
+    path
   }
 }
 

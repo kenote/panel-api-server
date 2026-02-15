@@ -19,6 +19,7 @@ export declare type ProgressResult = {
   progress : number
   total    : number
   current  : number
+  path    ?: string
 }
 
 /** 归档回调信息 */

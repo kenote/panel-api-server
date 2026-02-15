@@ -7,12 +7,14 @@ export declare type TaskByUnzip = {
   type       : 'unzip'
   zipfile    : string
   output     : string
+  uid       ?: string
 }
 
 export declare type TaskByArchiver = {
   type       : 'archiver'
   filename   : string
   input      : ArchiveOptions
+  uid       ?: string
 }
 
 export declare type TaskByAPIProxy = {
@@ -20,12 +22,14 @@ export declare type TaskByAPIProxy = {
   entrance  ?: APIProxy.Entrance
   proxy      : APIProxy.ProxyOptions
   output    ?: 'json' | 'xlsx'
+  uid       ?: string
 }
 
 export declare type TaskNode = {
   pid        : string
   type       : 'unzip' | 'archiver' | 'api-proxy'
   status     : 'running' | 'finish'
+  uid       ?: string
   error     ?: string
   createTime : Date
   lastTime  ?: Date

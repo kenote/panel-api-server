@@ -10,6 +10,7 @@ import { tokenRepository } from '~/services/db/token'
 import { Readable } from 'stream'
 import * as Store from '~/services/store'
 import fs from 'fs'
+import { ErrorCode, httpError } from '~/services/error'
 
 const { SECRET_KEY, expiresIn, REFRESH_SECRET, refreshExpires } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 
@@ -118,6 +119,9 @@ export default class restful {
         fileStream.push(null)
       }
       else {
+        if (!fs.existsSync(content)) {
+          throw httpError(ErrorCode.ERROR_FILENAME_NOTEXISTS)
+        }
         contentType = Store.getContentType(content, options)
         fileStream = fs.readFileSync(content)
       }

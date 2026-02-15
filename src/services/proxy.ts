@@ -74,7 +74,7 @@ export function getEntrance<T> (options: APIProxy.EntranceOptions<T>) {
       }
     }
     // 鉴权判断
-    let { authenticationState, isUser } = await useAuthentication(entrance, getUser)
+    let { authenticationState, isUser, user } = await useAuthentication<T>(entrance, getUser)
     let payload = entrance.payload ? filterData(entrance.payload, serviceModules)(body) : body
     if (__TAG) {
       set(payload, '__TAG', __TAG)
@@ -99,12 +99,14 @@ export function getEntrance<T> (options: APIProxy.EntranceOptions<T>) {
         if (!valid) {
           throw createError(500, 'MD5验签失败', { code: 1000 })
         }
+        user = tokenOpts?.key
       }
       else {
         let valid = validSign(sign?.md5!, sign?.field!)(merge(payload, { key: sign?.token }))
         if (!valid) {
           throw createError(500, 'MD5验签失败', { code: 1000 })
         }
+        user = sign?.token
       }
     }
     if (authenticationState?.type === 'apikey') {
@@ -120,7 +122,7 @@ export function getEntrance<T> (options: APIProxy.EntranceOptions<T>) {
     if (entrance.httpProxy) {
       entrance.native = entrance.native ?? true
     }
-    return { isUser, payload, entrance, setting, authenticationState, channelPath, serviceModules }
+    return { isUser, user, payload, entrance, setting, authenticationState, channelPath, serviceModules }
   }
 }
 
@@ -132,11 +134,12 @@ export function getEntrance<T> (options: APIProxy.EntranceOptions<T>) {
 async function useAuthentication<T> (entrance: APIProxy.Entrance, getUser: () => Promise<T> | T) {
   let authenticationState: APIProxy.Authentication | null = null
   let isUser: true | false | 'Unauthorized' = false
+  let user: T | string | undefined
   if (entrance.authentication) {
     for (let authentication of entrance.authentication) {
       authenticationState = authentication
       if (authentication.type === 'apikey') {
-        let user = await getUser()
+        user = await getUser()
         if (user) {
           isUser = ruleJudgment({ ...authentication.user })(user)
           if (isUser) break
@@ -156,7 +159,7 @@ async function useAuthentication<T> (entrance: APIProxy.Entrance, getUser: () =>
       }
     }
   }
-  return { authenticationState, isUser }
+  return { authenticationState, isUser, user }
 }
 
 /**
