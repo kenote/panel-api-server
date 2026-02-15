@@ -7,9 +7,15 @@ import { resolve } from 'path'
 import RootControl from './controller'
 import UCControl from './controller/uc'
 import V1Control from './controller/v1'
+import { toRequestHandler, Context as IContext } from '@kenote/koa'
+import { pick } from 'lodash'
 
 export const staticDir =resolve(process.cwd(), 'static')
 export const templateDir = resolve(process.cwd(), 'views')
+
+const getRequest = (ctx: IContext) => pick(ctx, [
+  'headers', 'clientIP', 'method', 'originalUrl', 'params', 'path', 'body', 'protocol', 'query'
+])
 
 @Module({
   statics: {
@@ -30,7 +36,12 @@ class TemplateView {}
 
 @Module({
   imports: [ StaticFile, TemplateView, RootControl, UCControl, V1Control ],
-  plugins: [ session, passport ],
+  plugins: [ session, passport, [
+    toRequestHandler((ctx, next) => {
+      logger.info('REQUEST', getRequest(ctx))
+      return next()
+    })
+  ] ],
   middlewares: [ restful ],
   httpException: {
     notFound: async (ctx: Context) => {

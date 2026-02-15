@@ -54,6 +54,7 @@ export default class ProxyController {
       let { type, result } = await getProxyResponse(entrance, payload)({ ctx, logger, setting, serviceModules })
       if (entrance?.native) {
         ctx.setHeader('content-type', entrance.native == 'json' ? 'application/json; charset=utf-8' : type)
+        logger.info('RESPONSE', result)
         return ctx.send(result)
       }
       return ctx.api(result)

@@ -11,6 +11,7 @@ import { Readable } from 'stream'
 import * as Store from '~/services/store'
 import fs from 'fs'
 import { ErrorCode, httpError } from '~/services/error'
+import logger from '~/services/logger'
 
 const { SECRET_KEY, expiresIn, REFRESH_SECRET, refreshExpires } = loadConfig<ServerConfigure>('config/server', { mode: 'merge' })
 
@@ -20,12 +21,12 @@ export default class restful {
   @Action()
   api<T =any> (ctx:Context) {
     return (data: T, error?: HttpError) => {
+      let body: { data?: any, error?: string } = { data }
       if (error != null) {
-        ctx.json({ error: error?.message })
+        body = { error: error?.message }
       }
-      else {
-        ctx.json({ data })
-      }
+      logger.info('RESPONSE', body)
+      return ctx.json(body)
     }
   }
 
