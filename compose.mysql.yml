@@ -1,0 +1,45 @@
+
+services:
+  app:
+    image: panel-api-server:latest
+    container_name: panel-api-server
+    restart: always
+    depends_on:
+      - mysql
+      - redis
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./channels:/app/channels
+      - ./config:/app/config
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./mails:/app/mails
+      - ./static:/app/staticstatic
+      - ./tasks:/app/tasks
+      - ./uploadfiles:/app/uploadfiles
+      - ./views:/app/views
+    ports:
+      - ${SERVER_PORT:-4000}:4000
+
+  mysql:
+    image: mysql:8.0-debian
+    container_name: panel-api-db
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=${ROOT_PASS}
+      - MYSQL_DATABASE=${DB_NAME}
+      - MYSQL_USER=${DB_USER}
+      - MYSQL_PASSWORD=${DB_PASS}
+    volumes:
+      - ./data/mysql/db/:/var/lib/mysql
+      - ./data/mysql/conf/:/etc/mysql/conf.d
+
+  redis:
+    image: redis:6.2-alpine
+    container_name: panel-api-redis
+    restart: always
+    volumes:
+      - ./redis/data:/data
+      - ./redis/logs:/logs
+    command: redis-server --requirepass ${REDIS_PASS}

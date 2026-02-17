@@ -59,7 +59,16 @@ docker build -f Dockerfile --tag panel-api-server .
 # 编辑环境变量
 cp .env.example .env
 
-# 启动容器
+# 拷贝 Compose 文件; SQLite 数据库选择
+cp compose.example.yml compose.yml
+
+# 拷贝 Compose 文件; MySQL 数据库选择
+cp compose.mysql.yml compose.yml
+
+# 拷贝 Compose 文件; Postgres 数据库选择
+cp compose.pg.yml compose.yml
+
+# 启动 Compose 容器
 docker-compose up -d
 ```
 
@@ -68,13 +77,13 @@ docker-compose up -d
 # 拉取新的源代码
 git pull
 
-# 卸载容器
+# 卸载 Compose  容器
 docker-compose down
 
 # 编译镜像
 docker build -f Dockerfile --tag panel-api-server .
 
-# 启动容器
+# 启动 Compose 容器
 docker-compose up -d
 ```
 

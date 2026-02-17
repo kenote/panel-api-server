@@ -2,12 +2,11 @@
 services:
   app:
     image: panel-api-server:latest
-    container_name: api-server
+    container_name: panel-api-server
     restart: always
     depends_on:
+      - postgres
       - redis
-    env_file:
-      - ./.env
     environment:
       - NODE_ENV=production
     volumes:
@@ -21,11 +20,22 @@ services:
       - ./uploadfiles:/app/uploadfiles
       - ./views:/app/views
     ports:
-      - ${SERVER_PORT:-4000}:4000
+      - 4000:4000
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: apanel-api-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
 
   redis:
     image: redis:6.2-alpine
-    container_name: api-server_redis
+    container_name: panel-api-redis
     restart: always
     volumes:
       - ./redis/data:/data

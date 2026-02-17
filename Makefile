@@ -27,3 +27,9 @@ restart:
 # 移除服务
 delete:
 	@[ -f ecosystem.config.js ] && pm2 delete ecosystem.config.js && pm2 save --force
+
+# 清理日志/任务/上传文件
+clear:
+	@rm -rf logs/*
+	@rm -rf tasks/*
+	@rm -rf uploadfiles/*
