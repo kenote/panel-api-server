@@ -1,8 +1,4 @@
 ---
-# 网站名称
-SITE_NAME: Panel
-# 访问地址
-SITE_HOST: http://127.0.0.1:4000
 # JWT的令牌
 SECRET_KEY: PANEL-SERVER
 # 刷新JWT的令牌
@@ -42,14 +38,3 @@ previewTypes:
     extname: [ .woff2 ]
   - type: text/plain; charset=utf-8
     extname: [ .txt, .log ]
-
-# Redis 连接
-redisOpts:
-  host: 127.0.0.1
-  port: 6379
-  db: 0
-
-# 数据库连接
-dataOptios:
-  type: better-sqlite3
-  database: ./data/sqlite.db

@@ -1,4 +1,7 @@
 // kenci.config.js
+require('dotenv').config()
+const { merge } = require('lodash')
+
 module.exports = {
   /**
    * 入口文件
@@ -48,8 +51,6 @@ module.exports = {
     /**
      * 环境变量
      */
-    env: {
-      NODE_ENV: 'development'
-    }
+    env: merge(process.env, { NODE_ENV: 'development' })
   }
 }
