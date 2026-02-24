@@ -47,7 +47,6 @@ export function login (ctx: Context, next: NextHandler) {
  * 注册用户
  */
 export function register (ctx: Context, next: NextHandler) {
-  let { invitation } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
   let filters = <FilterData.options[]> [
     {
       key: 'username',
@@ -91,19 +90,16 @@ export function register (ctx: Context, next: NextHandler) {
       ]
     })
   }
-  if (invitation) {
-    filters.push({
-      key: 'invitation',
-      type: 'string',
-      rules: [
-        { required: true, message: '邀请码不能为空', code: 1000 },
-        { validator: value => value == invitation, message: '邀请码不正确', code: 1000 }
-      ]
-    })
-  }
+  filters.push({
+    key: 'invitation',
+    type: 'string',
+    rules: [
+      { required: true, message: '邀请码不能为空', code: 1000 },
+      { validator: validInvitation, message: '邀请码不正确', code: 1000 }
+    ]
+  })
   try {
     let result = filterData(filters)(ctx.body)
-    unset(result, 'invitation')
     ctx.payload = cleanNaNByPayload(result)
     return next()
   } catch (error) {
@@ -145,4 +141,18 @@ export async function sendCode (ctx: Context, next: NextHandler) {
       nextError(<HttpError>error, ctx, next)
     }
   }
+}
+
+/**
+ * 验证邀请码
+ * @param value 
+ * @returns 
+ */
+function validInvitation (value: string) {
+  let { invitation, groups } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+  let group = groups?.find(v => v.invitation === value)
+  if (group || invitation === value) {
+    return true
+  }
+  return false
 }

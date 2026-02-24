@@ -7,10 +7,19 @@ export declare interface AccountConfigure {
   randomOptions  ?: RandomOptions | number
   invitation     ?: string
   admins         ?: string[]
+  groups         ?: AccountGroup[]
   verifyCode     ?: VerifyCode | StringValue | number
 }
 
 /** 验证码配置 */
 export declare type VerifyCode = {
   timeout   : StringValue | number
+}
+
+/** 账号分组 */
+export declare type AccountGroup = {
+  key        : string
+  name       : string
+  invitation : string
+  users      : string[] | 'normal'
 }

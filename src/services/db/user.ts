@@ -1,7 +1,7 @@
 import AppDataSource from '~/services/data'
 import { User } from '~/entities'
 import type { QueryUser, NewUser, SafeUser, VerifyUser } from '@/types/db/user'
-import { merge, omit } from 'lodash'
+import { merge, omit, isArray } from 'lodash'
 import * as uuid from 'uuid'
 import { httpError, ErrorCode } from '~/services/error'
 import { check } from './verify'
@@ -11,9 +11,10 @@ import type { AccountConfigure } from '@/types/config/account'
 import { sender, parseMailUser, sendMail } from '~/services/mailer'
 import { getEnv } from '~/services'
 import type Mail from 'nodemailer/lib/mailer'
+import { setConfig } from '~/services/setting'
 
 export const userRepository = AppDataSource.getRepository(User)
-const { encryptRule, randomOptions } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+const { encryptRule, randomOptions, invitation, groups } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
 
 /**
  * 验证用户
@@ -45,7 +46,7 @@ export async function verifyUser(body: VerifyUser) {
  * @param body 
  * @returns 
  */
-export async function createUser (body: NewUser) {
+export async function createUser (body: NewUser & { invitation: string }) {
   let isUsername = await userRepository.findOneBy({ username: body.username })
   if (isUsername) {
     throw httpError(ErrorCode.ERROR_VALID_USERNAME_UNIQUE)
@@ -54,7 +55,7 @@ export async function createUser (body: NewUser) {
   if (isEmail) {
     throw httpError(ErrorCode.ERROR_VALID_EMAIL_UNIQUE)
   }
-  let user = merge(omit(body, ['password', 'target']), <Partial<User>> {
+  let user = merge(omit(body, ['password', 'target', 'invitation']), <Partial<User>> {
     pid: uuid.v7(), 
     token: `ck-${uuid.v7().replace(/\-/g, '')}`
   })
@@ -70,6 +71,14 @@ export async function createUser (body: NewUser) {
     user.salt = salt
   }
   let result = await userRepository.insert(user)
+  let group = groups?.find(v => v.invitation === body.invitation)
+  if (isArray(group?.users)) {
+    group.users.push(user.username)
+    setConfig<AccountConfigure>('account', { groups })
+  }
+  if (body.invitation === invitation) {
+    setConfig<AccountConfigure>('account', { admins: [user.username] })
+  }
   if (!body.password) {
     sendMailByNewuser(body, pass)
   }
