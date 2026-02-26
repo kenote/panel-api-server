@@ -2,6 +2,7 @@ import { HttpError } from 'http-errors'
 import { SafeUser } from './db/user'
 import { User } from '~/entities'
 import { Context } from '@kenote/core'
+import { AccountGroup } from './config'
 
 export declare interface Restful {
   api<t = any> (data: t, error?: HttpError): void
@@ -21,6 +22,8 @@ export declare interface StreamOptions {
 
 export declare type AuthToken = {
   user        ?: SafeUser
+  admin       ?: boolean
+  group       ?: Pick<AccountGroup, 'key' | 'name'>[]
   accessToken  : string
   refreshToken : string
 }

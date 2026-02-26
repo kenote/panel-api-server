@@ -40,7 +40,7 @@ bootstarp()
  * 初始化
  */
 function initialize () {
-  let config: AccountConfigure = {}
+  let config: Partial<AccountConfigure> = {}
   let { admins, groups, invitation } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
   if (!invitation) {
     config.invitation = randomString(8)

@@ -1,7 +1,7 @@
 import AppDataSource from '~/services/data'
 import { User } from '~/entities'
 import type { QueryUser, NewUser, SafeUser, VerifyUser } from '@/types/db/user'
-import { merge, omit, isArray } from 'lodash'
+import { merge, omit, pick, isArray } from 'lodash'
 import * as uuid from 'uuid'
 import { httpError, ErrorCode } from '~/services/error'
 import { check } from './verify'
@@ -14,7 +14,7 @@ import type Mail from 'nodemailer/lib/mailer'
 import { setConfig } from '~/services/setting'
 
 export const userRepository = AppDataSource.getRepository(User)
-const { encryptRule, randomOptions, invitation, groups } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+const { encryptRule, randomOptions } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
 
 /**
  * 验证用户
@@ -71,6 +71,7 @@ export async function createUser (body: NewUser & { invitation: string }) {
     user.salt = salt
   }
   let result = await userRepository.insert(user)
+  let { invitation, groups } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
   let group = groups?.find(v => v.invitation === body.invitation)
   if (isArray(group?.users)) {
     group.users.push(user.username)
@@ -83,6 +84,41 @@ export async function createUser (body: NewUser & { invitation: string }) {
     sendMailByNewuser(body, pass)
   }
   return result
+}
+
+/**
+ * 判断是否管理员
+ * @param username 
+ * @returns 
+ */
+export function isAdmin (username: string) {
+  let { admins } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+  return admins?.includes(username)
+}
+
+/**
+ * 获取用户分组
+ * @param username 
+ * @returns 
+ */
+export function getGroup (username: string) {
+  let { groups, admins, adminGroup } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+  let group = groups?.filter( v => v?.users?.includes(username) ) ?? groups?.filter( v => v.users === 'normal' ) ?? []
+  let admin = admins?.includes(username)
+  if (admin) {
+    group.unshift({ key: 'admin', name: adminGroup, users: [] })
+  }
+  return group.map( v => pick(v, ['key', 'name']) )
+}
+
+/**
+ * 分组列表
+ * @returns 
+ */
+export function getGrouplist () {
+  let { groups, admins, invitation, adminGroup } = loadConfig<AccountConfigure>('config/account', { mode: 'merge' })
+  groups?.unshift({ key: 'admin', name: adminGroup, invitation, users: admins??[] })
+  return groups
 }
 
 /**

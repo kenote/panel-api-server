@@ -4,7 +4,7 @@ import type { Restful, AuthToken, Account, StreamOptions } from '@/types/restful
 import { setJwToken, verifyJwToken } from './auth'
 import { loadConfig } from '@kenote/config'
 import type { ServerConfigure } from '@/types/config'
-import { userRepository, safeUser } from '~/services/db/user'
+import { userRepository, safeUser, isAdmin, getGroup } from '~/services/db/user'
 import type { User } from '~/entities'
 import { tokenRepository } from '~/services/db/token'
 import { Readable } from 'stream'
@@ -60,6 +60,8 @@ export default class restful {
       let authToken = await updateToken(user.pid)
       ctx.cookie('jwtoken', authToken.accessToken)
       authToken.user = safeUser(user)
+      authToken.admin = isAdmin(user.username)
+      authToken.group = getGroup(user.username)
       return authToken
     }
   }

@@ -12,3 +12,6 @@ randomOptions:
 # 验证码设置
 verifyCode:
   timeout: 5m
+
+# 管理组名称
+adminGroup: 系统管理员

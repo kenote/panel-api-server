@@ -144,6 +144,37 @@ export async function sendCode (ctx: Context, next: NextHandler) {
 }
 
 /**
+ * 刷新访问令牌
+ */
+export function refreshToken (ctx: Context, next: NextHandler) {
+  let filters = <FilterData.options[]> [
+    {
+      key: 'refreshToken',
+      type: 'string',
+      rules: [
+        { required: true, message: '刷新Token不能为空', code: 1000 }
+      ]
+    },
+    {
+      key: 'pid',
+      type: 'string',
+      rules: [
+        { required: true, message: 'PID不能为空', code: 1000 }
+      ]
+    }
+  ]
+  try {
+    let result = filterData(filters)(ctx.body)
+    ctx.payload = cleanNaNByPayload(result)
+    return next()
+  } catch (error) {
+    if (error instanceof Error) {
+      nextError(<HttpError>error, ctx, next)
+    }
+  }
+}
+
+/**
  * 验证邀请码
  * @param value 
  * @returns 
