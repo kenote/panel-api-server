@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm'
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm'
 
 @Entity('user')
 export class User {
@@ -21,7 +21,7 @@ export class User {
   @CreateDateColumn()
   createAt: Date
 
-  @Column({ type: 'datetime', default: () => 'datetime(\'now\')' })
+  @UpdateDateColumn()
   updateAt: Date
 
   @Column({ type: 'varchar', length: 50 })

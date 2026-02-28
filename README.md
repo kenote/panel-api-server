@@ -29,6 +29,12 @@ npm run build
 # 编辑环境变量
 cp .env.example .env
 
+# 创建数据库 MySQL 数据库选择
+mysql -uroot -p < create_mysql.sql
+
+# 创建数据库 Postgres 数据库选择
+psql -U postgres -f create_pg.sql
+
 # 启动 PM2
 make start
 ```
