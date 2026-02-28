@@ -30,7 +30,7 @@ export const getOptions = (name: string = 'default') => {
   for (let [key] of Object.entries(stores)) {
     stores[key].errors = storeErrors
   }
-  return stores?.[name]
+  return stores?.[name === 'files' ? `default` : name]
 }
 
 /**
@@ -88,7 +88,7 @@ export function parsePutResult (ctx: Context) {
   return (result: PutResult) => {
     let { url } = result
     if (/^(\/)/.test(result.url)) {
-      result.url = `${ctx.protocol}://${ctx.headers.host}${url}`
+      result.url = `${getEnv().SITE_HOST}${url}`
     }
     return result
   }
@@ -123,7 +123,7 @@ export async function getFilelist (options: UploadStoreOptions<StoreBaseInfo>, d
       if (!info.directory) {
         info.url = `${getEnv().SITE_HOST}${urlprefix}/${name}${directory?`?dir=${directory}`:''}`
         info.mime = mime.lookup(name)||'application/octet-stream'
-        if (/^(image)/.test(info.mime!)) {
+        if (/^(image)/.test(info.mime!) && thumbnail) {
           info.thumbnail = `${getEnv().SITE_HOST}${thumbnail}/${name}${directory?`?dir=${directory}`:''}`
         }
       }

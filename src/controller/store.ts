@@ -26,7 +26,7 @@ export default class StoreController {
       if (!store || store.type == 'noupload') {
         return await ctx.notfound()
       }
-      let filePath = Store.getSavePath(type, dir, ctx.user)
+      let filePath = Store.getSavePath(type, dir, user)
       let putStream = Store.putStreams?.[store.type]
       if (!putStream) {
         throw httpError(ErrorCode.ERROR_MISSING_CONFIG_PARAMETER)
